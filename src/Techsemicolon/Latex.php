@@ -57,6 +57,7 @@ class Latex
      */
     private $nameInsideZip;
 
+    private $env;
     /**
      * Construct the instance
      * 
@@ -91,6 +92,16 @@ class Latex
         if(is_string($binPath)){
 
             $this->binPath = $binPath;
+        }
+
+        return $this;
+    }
+
+    public function env($env){
+
+        if(is_array($env)){
+
+            $this->env = $env;
         }
 
         return $this;
@@ -244,7 +255,7 @@ class Latex
         $program    = $this->binPath ? $this->binPath : 'pdflatex';
         $cmd        = [$program, "-output-directory", $tmpDir, $tmpfname];
         
-        $process    = new Process($cmd);
+        $process    = new Process($cmd,null,$this->env);
         $process->run();
 
         if (!$process->isSuccessful()) {
