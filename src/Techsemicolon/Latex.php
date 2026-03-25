@@ -7,6 +7,7 @@ use Techsemicolon\LatexPdfWasGenerated;
 use Techsemicolon\LatexPdfFailed;
 use Techsemicolon\ViewNotFoundException;
 use Symfony\Component\Process\Process;
+use Str;
 
 class Latex
 {
@@ -56,6 +57,7 @@ class Latex
      */
     private $nameInsideZip;
 
+    private $env;
     /**
      * Construct the instance
      * 
@@ -90,6 +92,16 @@ class Latex
         if(is_string($binPath)){
 
             $this->binPath = $binPath;
+        }
+
+        return $this;
+    }
+
+    public function env($env){
+
+        if(is_array($env)){
+
+            $this->env = $env;
         }
 
         return $this;
@@ -233,7 +245,7 @@ class Latex
      */
     private function generate(){
 
-    	$fileName = str_random(10);
+    	$fileName = Str::random(10);
         $tmpfname = tempnam(sys_get_temp_dir(), $fileName);
         $tmpDir = sys_get_temp_dir();
         chmod($tmpfname, 0755);
@@ -243,7 +255,7 @@ class Latex
         $program    = $this->binPath ? $this->binPath : 'pdflatex';
         $cmd        = [$program, "-output-directory", $tmpDir, $tmpfname];
         
-        $process    = new Process($cmd);
+        $process    = new Process($cmd,null,$this->env);
         $process->run();
 
         if (!$process->isSuccessful()) {
